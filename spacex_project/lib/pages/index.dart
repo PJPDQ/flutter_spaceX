@@ -15,6 +15,11 @@ class _IndexPageState extends State<IndexPage> {
   List launches = [];
   List sortedLaunch = [];
   bool isLoading = false;
+  List<String> dropDown = <String>[
+    "Launch Date",
+    "Mission name",
+    "Launch Success"
+  ];
 
   @override
   void initState() {
@@ -26,7 +31,7 @@ class _IndexPageState extends State<IndexPage> {
     setState(() {
       isLoading = true;
     });
-    var url = "https://api.spacexdata.com/v3/launches?limit=10";
+    var url = "https://api.spacexdata.com/v3/launches?limit=100";
     var response = await http.get(url);
     if (response.statusCode == 200) {
       var items = json.decode(response.body);
@@ -41,27 +46,73 @@ class _IndexPageState extends State<IndexPage> {
     }
   }
 
+  void sortOptions(String value) {
+    print("sorting...");
+    sortedLaunch = launches.map((e) => e).toList();
+    switch (value) {
+      case 'Launch Date':
+        print('Launch date');
+        sortedLaunch.sort((first, second) =>
+            first['launch_date_local'].compareTo(second['launch_date_local']));
+        print(sortedLaunch.length);
+        break;
+      case 'Mission name':
+        print('Mission Name');
+        sortedLaunch.sort((first, second) =>
+            first['mission_name'].compareTo(second['mission_name']));
+        print(sortedLaunch.length);
+        break;
+      case 'Launch Success':
+        print('LaunchSuccess');
+        sortedLaunch = launches
+            .where((launch) => launch['launch_success'] == true)
+            .toList();
+        print(sortedLaunch.length);
+        break;
+      default:
+        break;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("Listing of Launches"),
-      ),
+          title: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Text('Listing of Launches'),
+          new DropdownButton<String>(
+              underline: Container(),
+              icon: Icon(Icons.sort, color: Colors.white),
+              items: dropDown.map<DropdownMenuItem<String>>((String value) {
+                return DropdownMenuItem<String>(
+                  value: value,
+                  child: Text(value),
+                );
+              }).toList(),
+              onChanged: (String value) {
+                setState(() {
+                  sortOptions(value);
+                });
+              })
+        ],
+      )),
       body: getBody(),
     );
   }
 
   Widget getBody() {
-    if (launches.contains(null) || launches.length < 0 || isLoading) {
+    if (sortedLaunch.contains(null) || sortedLaunch.length < 0 || isLoading) {
       return Center(
           child: CircularProgressIndicator(
         valueColor: new AlwaysStoppedAnimation<Color>(primary),
       ));
     }
     return ListView.builder(
-        itemCount: launches.length,
+        itemCount: sortedLaunch.length,
         itemBuilder: (context, index) {
-          return getCard(launches[index]);
+          return getCard(sortedLaunch[index]);
         });
   }
 
