@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:spacex_project/pages/details_pages.dart';
 import 'package:spacex_project/theme/colors.dart';
 import 'package:http/http.dart' as http;
 
@@ -31,7 +32,7 @@ class _IndexPageState extends State<IndexPage> {
     setState(() {
       isLoading = true;
     });
-    var url = "https://api.spacexdata.com/v3/launches?limit=100";
+    var url = "https://api.spacexdata.com/v3/launches";
     var response = await http.get(url);
     if (response.statusCode == 200) {
       var items = json.decode(response.body);
@@ -116,30 +117,24 @@ class _IndexPageState extends State<IndexPage> {
         });
   }
 
-  onSortDate() {
-    setState(() {
-      sortedLaunch.sort(
-          (a, b) => b['launch_date_local'].compareTo(a['launch_date_local']));
-    });
-  }
-
-  onSortMissionName() {
-    setState(() {
-      sortedLaunch
-          .sort((a, b) => b['mission_name'].compareTo(a['mission_name']));
-    });
-  }
-
   Widget getCard(index) {
     var mission_name = index['mission_name'];
     var mission_year = index['launch_year'];
     var rocket = index['rocket']['rocket_name'];
+    var rocket_id = index['rocket']['rocket_id'];
     var flight_num = index['flight_number'];
     var flight_img = index['links']['mission_patch'];
     return Card(
       child: new InkWell(
         onTap: () {
           print("Tapped");
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (_) =>
+                  DetailedPage(flight_num: flight_num, rocket_id: rocket_id),
+            ),
+          );
         },
         child: ListTile(
             title: Row(
