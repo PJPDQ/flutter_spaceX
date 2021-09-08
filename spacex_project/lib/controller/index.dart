@@ -1,7 +1,7 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
-import 'package:spacex_project/pages/details_pages.dart';
+import 'package:spacex_project/controller/details_pages.dart';
 import 'package:spacex_project/theme/colors.dart';
 import 'package:http/http.dart' as http;
 
@@ -33,7 +33,7 @@ class _IndexPageState extends State<IndexPage> {
       isLoading = true;
     });
     var url = "https://api.spacexdata.com/v3/launches";
-    var response = await http.get(url);
+    var response = await http.get(Uri.parse(url));
     if (response.statusCode == 200) {
       var items = json.decode(response.body);
       setState(() {

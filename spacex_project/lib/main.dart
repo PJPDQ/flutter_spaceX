@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:spacex_project/pages/index.dart';
+import 'package:spacex_project/controller/index.dart';
 import 'package:spacex_project/theme/colors.dart';
 
 void main() {

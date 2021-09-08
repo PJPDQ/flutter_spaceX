@@ -9,9 +9,9 @@ class SizeConfig {
 
   void init(BuildContext context) {
     _mediaQueryData = MediaQuery.of(context);
-    screenWidth = _mediaQueryData.size.width;
-    screenHeight = _mediaQueryData.size.height;
-    orientation = _mediaQueryData.orientation;
+    screenWidth = MediaQuery.of(context).size.width;
+    screenHeight = MediaQuery.of(context).size.height;
+    orientation = MediaQuery.of(context).orientation;
   }
 }
 
@@ -25,6 +25,9 @@ double getProportionateScreenHeight(double inputHeight) {
 // Get the proportionate height as per screen size
 double getProportionateScreenWidth(double inputWidth) {
   double screenWidth = SizeConfig.screenWidth;
+  print(inputWidth);
+  print('------------');
+  print(screenWidth);
   // 375 is the layout width that designer use
   return (inputWidth / 375.0) * screenWidth;
 }

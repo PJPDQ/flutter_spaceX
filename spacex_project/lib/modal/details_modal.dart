@@ -1,5 +1,13 @@
 import 'package:flutter/cupertino.dart';
 
+double checkDouble(dynamic value) {
+  if (value is String) {
+    return double.parse(value);
+  } else {
+    return value + .0;
+  }
+}
+
 class LaunchDetails {
   final int flightNum;
   final String missionName;
@@ -11,17 +19,33 @@ class LaunchDetails {
   final String missionPatch;
   final String wikiLink;
   final String articleLink;
-  const LaunchDetails(
+
+  LaunchDetails(
       {this.flightNum,
-      this.missionName,
       this.launchYear,
+      this.missionName,
+      this.missionPatch,
+      this.details,
       this.rocketId,
       this.rocketName,
-      this.details,
       this.imgUrl,
-      this.missionPatch,
       this.wikiLink,
       this.articleLink});
+
+  factory LaunchDetails.fromJson(Map<String, dynamic> json) {
+    return LaunchDetails(
+      flightNum: json['flight_num'],
+      launchYear: json['launch_year'],
+      missionName: json['mission_name'],
+      missionPatch: json['links']['mission_patch'],
+      details: json['details'],
+      rocketId: json['rocket']['rocket_id'],
+      rocketName: json['rocket']['rocket_name'],
+      imgUrl: json["links"]["flickr_images"].cast<String>(),
+      wikiLink: json["links"]["wikipedia"],
+      articleLink: json["links"]["article_link"],
+    );
+  }
 }
 
 class RocketDetails {
@@ -38,7 +62,8 @@ class RocketDetails {
   final String description;
   final String rocketId;
   final String rocketName;
-  const RocketDetails(
+  final List<String> imgUrl;
+  RocketDetails(
       {this.id,
       this.costsPerLaunch,
       this.successRate,
@@ -51,13 +76,30 @@ class RocketDetails {
       this.wikiLink,
       this.description,
       this.rocketId,
-      this.rocketName});
+      this.rocketName,
+      this.imgUrl});
+
+  factory RocketDetails.fromJson(Map<String, dynamic> json) {
+    return RocketDetails(
+        id: json["id"],
+        costsPerLaunch: json["cost_per_launch"] ?? 0,
+        successRate: json["success_rate_pct"] ?? 0,
+        firstFlight: json["first_flight"],
+        country: json["country"],
+        company: json["company"],
+        height: checkDouble(json["height"]["meters"]),
+        diameter: checkDouble(json["diameter"]["meters"]),
+        mass: json["mass"]["kg"] ?? 0,
+        wikiLink: json["wikipedia"],
+        description: json["description"],
+        rocketId: json["rocket_id"],
+        rocketName: json["rocket_name"],
+        imgUrl: json['flickr_images'].cast<String>());
+  }
 }
 
 class TabChoice {
   final String choice;
   final IconData icon;
-  final RocketDetails rocket;
-  final LaunchDetails launch;
-  const TabChoice({this.choice, this.icon, this.rocket, this.launch});
+  const TabChoice({this.choice, this.icon});
 }
